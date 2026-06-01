@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Untuk Mamah, Rumah Pertama yang Tidak Pernah Pergi</title>
+    <!-- Google Fonts & FontAwesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --spotify-green: #1DB954;
+            --spotify-black: #121212;
+            --spotify-dark: #191414;
+            --spotify-card: #181818;
+            --spotify-card-hover: #282828;
+            --text-main: #FFFFFF;
+            --text-muted: #B3B3B3;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--spotify-black);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        /* --- 1. OPENING SCREEN --- */
+        #opening-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000000;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            transition: opacity 0.8s ease, visibility 0.8s;
+        }
+
+        .play-btn {
+            background-color: var(--spotify-green);
+            color: black;
+            border: none;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            font-size: 32px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(29, 185, 84, 0.5);
+            transition: transform 0.2s ease;
+            margin-bottom: 30px;
+        }
+
+        .play-btn:active {
+            transform: scale(0.9);
+        }
+
+        .opening-text {
+            max-width: 400px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1s ease 0.3s;
+        }
+
+        .opening-text h1 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: var(--spotify-green);
+        }
+
+        .opening-text p {
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* --- MAIN CONTAINER --- */
+        .main-content {
+            max-width: 450px; /* Standar ukuran Mobile */
+            margin: 0 auto;
+            padding: 20px;
+            display: none; /* Muncul setelah tombol play ditekan */
+        }
+
+        /* Header / Banner */
+        .spotify-header {
+            text-align: center;
+            padding: 40px 0 20px 0;
+            background: linear-gradient(to bottom, #1e3222, var(--spotify-black));
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        /* --- 2. MUSIC PLAYER --- */
+        .player-card {
+            background-color: var(--spotify-card);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        .album-art {
+            width: 100%;
+            aspect-ratio: 1;
+            background: linear-gradient(45deg, #111, #222);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.6);
+        }
+
+        .album-art img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .track-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .track-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .track-artist {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 4px;
+            background-color: #535353;
+            border-radius: 2px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .progress-bar {
+            width: 35%; /* Simulasi jalan */
+            height: 100%;
+            background-color: var(--text-main);
+            border-radius: 2px;
+        }
+
+        .time-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        .player-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+            font-size: 20px;
+        }
+
+        .btn-play-pause {
+            font-size: 36px;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        /* --- BONUS: COUNTDOWN DAYS --- */
+        .countdown-box {
+            background: linear-gradient(135deg, #1db95420, #000000);
+            border: 1px solid rgba(29, 185, 84, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .countdown-box h3 {
+            font-size: 28px;
+            color: var(--spotify-green);
+            margin-bottom: 5px;
+            font-weight: 800;
+        }
+
+        /* --- 3. PESAN UTAMA & 6. SURAT --- */
+        .message-section {
+            line-height: 1.8;
+            font-size: 15px;
+            color: #e5e5e5;
+            margin-bottom: 40px;
+            text-align: justify;
+        }
+
+        .message-section p {
+            margin-bottom: 15px;
+        }
+
+        .highlight-text {
+            color: var(--spotify-green);
+            font-weight: 600;
+        }
+
+        /* --- 4. TIMELINE KENANGAN --- */
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--spotify-green);
+            padding-left: 10px;
+        }
+
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .timeline-card {
+            background-color: var(--spotify-card);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .timeline-img {
+            width: 100%;
+            height: 250px;
+            background-color: #222;
+            object-fit: cover;
+        }
+
+        .timeline-caption {
+            padding: 15px;
+        }
+
+        .timeline-caption h4 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: var(--spotify-green);
+        }
+
+        .timeline-caption p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* --- 5. TANYA JAWAB INTERAKTIF --- */
+        .qa-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 40px;
+        }
+
+        .qa-card {
+            background-color: var(--spotify-card);
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .qa-card:active {
+            background-color: var(--spotify-card-hover);
+        }
+
+        .qa-question {
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .qa-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            color: var(--spotify-green);
+            font-weight: 700;
+            margin-top: 0;
+            font-size: 15px;
+        }
+
+        .qa-card.active .qa-answer {
+            max-height: 50px;
+            margin-top: 10px;
+        }
+
+        .qa-card .fa-chevron-down {
+            transition: transform 0.3s;
+        }
+
+        .qa-card.active .fa-chevron-down {
+            transform: rotate(180deg);
+        }
+
+        /* --- VOICE MESSAGE --- */
+        .voice-section {
+            background-color: #1a2e1f;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .voice-btn {
+            background-color: #ffffff;
+            color: #000000;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        /* --- 7. HALAMAN AKHIR & SURPRISE --- */
+        .footer-section {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(to top, #0f1c12, var(--spotify-black));
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .footer-section p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .heart-icon {
+            font-size: 40px;
+            color: red;
+            animation: pulse 1.5s infinite;
+            margin-bottom: 10px;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+
+        .surprise-btn {
+            background-color: var(--spotify-green);
+            color: black;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        /* Fullscreen Modal Surprise */
+        .modal-surprise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .modal-surprise img {
+            width: 100%;
+            max-height: 60%;
+            object-fit: contain;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. OPENING SCREEN -->
+    <div id="opening-screen">
+        <button class="play-btn" id="start-btn" onclick="initiateWebsite()">
+            <i class="fas fa-play"></i>
+        </button>
+        <div class="opening-text" id="opening-text">
+            <h1>Selamat Ulang Tahun ke-43, Mamah.</h1>
+            <p>Hari ini bukan sekadar tentang bertambahnya usia. Hari ini adalah perayaan atas seseorang yang telah mengubah hidup banyak orang hanya dengan kasih sayangnya.</p>
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="main-content" id="main-content">
+        
+        <div class="spotify-header">
+            <p style="font-size: 12px; tracking-letter: 1px; color: var(--text-muted); font-weight:600;">DIBUAT KHUSUS UNTUK</p>
+            <h2 style="font-size: 28px; font-weight: 800; margin-top:5px;">MAMAH ❤️</h2>
+        </div>
+
+        <!-- 2. SPOTIFY STYLE MUSIC PLAYER -->
+        <div class="player-card">
+            <div class="album-art">
+                <!-- GANTI LINK FOTO ALBUM DISINI -->
+                <img src="https://images.unsplash.com/photo-1544161515-4ab6ce6db874?q=80&w=500" alt="Album Art">
+            </div>
+            <div class="track-info">
+                <div>
+                    <div class="track-title">A Song for Mama</div>
+                    <div class="track-artist">Boyz II Men</div>
+                </div>
+                <i class="far fa-heart" style="color: var(--spotify-green); font-size: 20px;"></i>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <div class="time-info">
+                <span id="current-time">0:00</span>
+                <span>5:01</span>
+            </div>
+            <div class="player-controls">
+                <i class="fas fa-random" style="color: var(--text-muted);"></i>
+                <i class="fas fa-step-backward"></i>
+                <div class="btn-play-pause" onclick="toggleAudio()">
+                    <i class="fas fa-pause-circle" id="play-icon"></i>
+                </div>
+                <i class="fas fa-step-forward"></i>
+                <i class="fas fa-redo" style="color: var(--text-muted);"></i>
+            </div>
+        </div>
+
+        <!-- HIDDEN AUDIO ELEMENT -->
+        <!-- Ganti src dengan link file lagu MP3 milikmu -->
+        <audio id="bg-music" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" loop></audio>
+        <!-- Ganti src dengan link rekaman suaramu -->
+        <audio id="voice-note" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"></audio>
+
+        <!-- AUTOMATIC COUNTDOWN -->
+        <div class="countdown-box">
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 5px;">SPESIAL COUNTER</p>
+            <h3 id="days-counter">15.695</h3>
+            <p style="font-size: 12px; color: var(--text-muted);">Hari dunia ditemani oleh wanita luar biasa ini.</p>
+        </div>
+
+        <!-- 3. PESAN UTAMA -->
+        <div class="message-section">
+            <h3 class="highlight-text" style="font-size: 18px; margin-bottom: 10px;">Mamah,</h3>
+            <p>Jika hidup adalah sebuah perjalanan panjang, maka engkau adalah jalan pulang yang tidak pernah berubah.</p>
+            <p>Saat dunia terasa terlalu keras, pelukanmu selalu lebih kuat daripada segala ketakutan. Saat langkahku goyah, doamu selalu berjalan lebih dulu.</p>
+            <p>Aku mungkin belum menjadi anak yang sempurna. Aku mungkin belum mampu memberikan semua yang pantas Mamah dapatkan.</p>
+            <p class="highlight-text">Tetapi satu hal yang tidak pernah berubah: Aku bersyukur setiap hari karena dilahirkan sebagai anakmu.</p>
+            <p>Selamat ulang tahun yang ke-43, Mah. Semoga umur panjang, kesehatan, kebahagiaan, dan keberkahan selalu menyertai setiap langkahmu.</p>
+        </div>
+
+        <!-- 4. TIMELINE KENANGAN -->
+        <div class="section-title">Kenangan Terbaik Kita</div>
+        <div class="timeline">
+            <!-- Kenangan 1 -->
+            <div class="timeline-card">
+                <!-- Ganti link foto src di bawah ini -->
+                <img class="timeline-img" src="https://images.unsplash.com/photo-1519689680058-324335c77eba?q=80&w=500" alt="Kenangan 1">
+                <div class="timeline-caption">
+                    <h4>"Awal Semua Cerita"</h4>
+                    <p>Dari sinilah semuanya dimulai. Seorang ibu memeluk dunia kecilnya.</p>
+                </div>
+            </div>
+            <!-- Kenangan 2 -->
+            <div class="timeline-card">
+                <img class="timeline-img" src="https://images.unsplash.com/photo-1542037104857-ffbb0b9155fb?q=80&w=500" alt="Kenangan 2">
+                <div class="timeline-caption">
+                    <h4>Rumah Sejati</h4>
+                    <p>Rumah tidak pernah tentang bangunan. Rumah adalah tempat Mamah berada.</p>
+                </div>
+            </div>
+            <!-- Kenangan 3 -->
+            <div class="timeline-card">
+                <img class="timeline-img" src="https://images.unsplash.com/photo-1506869640319-fe1a24fd76dc?q=80&w=500" alt="Kenangan 3">
+                <div class="timeline-caption">
+                    <h4>Menyimpan Rasa</h4>
+                    <p>Beberapa foto menyimpan gambar. Foto ini menyimpan rasa.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- VOICE MESSAGE FEATURE -->
+        <div class="voice-section">
+            <p style="font-size: 14px; color: var(--text-muted);">Ada pesan suara kecil untukmu, Mah:</p>
+            <button class="voice-btn" onclick="toggleVoice()">
+                <i class="fas fa-microphone" id="voice-icon"></i> <span id="voice-text">Dengarkan Pesan dari Anakmu</span>
+            </button>
+        </div>
+
+        <!-- 5. TANYA JAWAB INTERAKTIF -->
+        <div class="section-title">Hal yang Perlu Mamah Tahu</div>
+        <div class="qa-container">
+            <div class="qa-card" onclick="toggleQA(this)">
+                <div class="qa-question">Siapa pahlawan favoritku? <i class="fas fa-chevron-down"></i></div>
+                <div class="qa-answer">❤️ Mamah</div>
+            </div>
+            <div class="qa-card" onclick="toggleQA(this)">
+                <div class="qa-question">Tempat ternyaman di dunia? <i class="fas fa-chevron-down"></i></div>
+                <div class="qa-answer">❤️ Di dekat Mamah</div>
+            </div>
+            <div class="qa-card" onclick="toggleQA(this)">
+                <div class="qa-question">Apa yang paling berharga dalam hidupku? <i class="fas fa-chevron-down"></i></div>
+                <div class="qa-answer">❤️ Keluarga yang Mamah jaga selama ini</div>
+            </div>
+            <div class="qa-card" onclick="toggleQA(this)">
+                <div class="qa-question">Apa harapan terbesarku? <i class="fas fa-chevron-down"></i></div>
+                <div class="qa-answer">❤️ Melihat Mamah tersenyum lebih banyak</div>
+            </div>
+            <div class="qa-card" onclick="toggleQA(this)">
+                <div class="qa-question">Siapa orang paling berjasa di hidupku? <i class="fas fa-chevron-down"></i></div>
+                <div class="qa-answer">❤️ Orang yang sedang membaca halaman ini</div>
+            </div>
+        </div>
+
+        <!-- 6. SURAT TERIMA KASIH -->
+        <div class="message-section" style="background-color: var(--spotify-card); padding: 20px; border-radius: 12px;">
+            <p>Terima kasih karena tidak pernah menyerah. Terima kasih karena tetap kuat ketika keadaan tidak mudah.</p>
+            <p>Terima kasih untuk setiap doa yang diam-diam Mamah panjatkan. Terima kasih untuk setiap pengorbanan yang mungkin tidak pernah kami lihat sepenuhnya.</p>
+            <p class="highlight-text">Jika suatu hari aku berhasil mewujudkan semua impianku, itu karena ada seorang wanita hebat yang terus mendorongku dari belakang. Wanita itu adalah Mamah.</p>
+        </div>
+
+        <!-- 7. HALAMAN AKHIR -->
+        <div class="footer-section">
+            <div class="heart-icon">❤️</div>
+            <p>"Tidak ada hadiah yang cukup besar untuk membalas semua yang telah Mamah berikan. Tetapi semoga halaman kecil ini bisa menjadi pengingat bahwa Mamah sangat dicintai."</p>
+            <h2 style="font-size: 22px; font-weight: 800;">Happy 43rd Birthday, Mamah</h2>
+            
+            <button class="surprise-btn" onclick="showSurprise()">Klik Kejutan Terakhir ✨</button>
+        </div>
+
+    </div>
+
+    <!-- LAST SURPRISE MODAL -->
+    <div class="modal-surprise" id="surpriseModal">
+        <span class="close-modal" onclick="closeSurprise()">&times;</span>
+        <h3 style="color: var(--spotify-green); margin-bottom: 15px; font-size: 20px;">Untuk Alasan Terbesarku</h3>
+        <!-- GANTI LINK FOTO KELUARGA BESAR DISINI -->
+        <img src="https://images.unsplash.com/photo-1581579438747-1dc8d1e0ca96?q=80&w=600" alt="Foto Keluarga Fullscreen">
+        <p style="font-size: 14px; line-height: 1.6; padding: 0 10px;">"Aku mungkin belum bisa memberikan dunia untuk Mamah. Tapi aku sedang berusaha. Dan semua usahaku selalu berawal dari satu alasan: Aku ingin melihat Mamah bahagia."</p>
+    </div>
+
+    <script>
+        // Simulasi hitung hari otomatis (Berdasarkan umur 43 tahun)
+        // Kamu bisa menyesuaikan tanggal lahir asli mamah di bawah ini (Format: YYYY, MM-1, DD)
+        // Contoh: lahir 2 Juni 1983 -> new Date(1983, 5, 2)
+        const birthDate = new Date(1983, 5, 2); 
+        const today = new Date();
+        const diffTime = Math.abs(today - birthDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        document.getElementById('days-counter').innerText = diffDays.toLocaleString('id-ID');
+
+        // Fungsi Trigger saat tombol Play di awal ditekan
+        function initiateWebsite() {
+            const btn = document.getElementById('start-btn');
+            const text = document.getElementById('opening-text');
+            const screen = document.getElementById('opening-screen');
+            const mainContent = document.getElementById('main-content');
+            const audio = document.getElementById('bg-music');
+
+            // Jalankan text fade-in
+            text.style.opacity = '1';
+            text.style.transform = 'translateY(0)';
+
+            // Setelah 4 detik, tutup screen awal dan buka konten utama
+            setTimeout(() => {
+                screen.style.opacity = '0';
+                setTimeout(() => {
+                    screen.style.display = 'none';
+                    mainContent.style.display = 'block';
+                    // Auto play musik utama setelah interaksi user
+                    audio.play().catch(error => console.log("Playback diblokir browser, nunggu klik manual."));
+                    startProgressSim();
+                }, 800);
+            }, 4500);
+        }
+
+        // Kontrol Musik Utama
+        const audio = document.getElementById('bg-music');
+        const playIcon = document.getElementById('play-icon');
+        
+        function toggleAudio() {
+            if (audio.paused) {
+                audio.play();
+                playIcon.className = "fas fa-pause-circle";
+            } else {
+                audio.pause();
+                playIcon.className = "fas fa-play-circle";
+            }
+        }
+
+        // Simulasi Progres bar detik musik berjalan
+        function startProgressSim() {
+            const progressBar = document.getElementById('progress-bar');
+            const currentTimeTxt = document.getElementById('current-time');
+            audio.addEventListener('timeupdate', () => {
+                const percentage = (audio.currentTime / audio.duration) * 100;
+                progressBar.style.width = percentage + '%';
+                
+                // Hitung menit & detik
+                let mins = Math.floor(audio.currentTime / 60);
+                let secs = Math.floor(audio.currentTime % 60);
+                if (secs < 10) secs = '0' + secs;
+                currentTimeTxt.innerText = mins + ':' + secs;
+            });
+        }
+
+        // Kontrol Voice Message
+        const voiceAudio = document.getElementById('voice-note');
+        const voiceIcon = document.getElementById('voice-icon');
+        const voiceText = document.getElementById('voice-text');
+
+        function toggleVoice() {
+            if (voiceAudio.paused) {
+                // Pause musik utama dulu agar tidak bertabrakan
+                audio.pause();
+                playIcon.className = "fas fa-play-circle";
+
+                voiceAudio.play();
+                voiceIcon.className = "fas fa-pause";
+                voiceText.innerText = "Memutar Pesan Suara...";
+            } else {
+                voiceAudio.pause();
+                voiceIcon.className = "fas fa-microphone";
+                voiceText.innerText = "Dengarkan Pesan dari Anakmu";
+            }
+        }
+        
+        voiceAudio.addEventListener('ended', () => {
+            voiceIcon.className = "fas fa-microphone";
+            voiceText.innerText = "Dengarkan Lagi Pesan Suara";
+            // Lanjutkan musik utama setelah voice note selesai
+            audio.play();
+            playIcon.className = "fas fa-pause-circle";
+        });
+
+        // Kontrol Q&A Accordion
+        function toggleQA(card) {
+            card.classList.toggle('active');
+        }
+
+        // Kontrol Surprise Modal
+        function showSurprise() {
+            document.getElementById('surpriseModal').style.display = 'flex';
+        }
+
+        function closeSurprise() {
+            document.getElementById('surpriseModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
