@@ -668,29 +668,20 @@
         const voiceIcon = document.getElementById('voice-icon');
         const voiceText = document.getElementById('voice-text');
 
-        function toggleVoice() {
-            if (voiceAudio.paused) {
-                // Pause musik utama dulu agar tidak bertabrakan
-                audio.pause();
-                playIcon.className = "fas fa-play-circle";
-
-                voiceAudio.play();
-                voiceIcon.className = "fas fa-pause";
-                voiceText.innerText = "Memutar Pesan Suara...";
-            } else {
-                voiceAudio.pause();
-                voiceIcon.className = "fas fa-microphone";
-                voiceText.innerText = "Dengarkan Pesan dari Anakmu";
-            }
-        }
-        
-        voiceAudio.addEventListener('ended', () => {
-            voiceIcon.className = "fas fa-microphone";
-            voiceText.innerText = "Dengarkan Lagi Pesan Suara";
-            // Lanjutkan musik utama setelah voice note selesai
-            audio.play();
-            playIcon.className = "fas fa-pause-circle";
-        });
+function toggleVoice() {
+    if (voiceAudio.paused) {
+        voiceAudio.play();
+        audio.volume = 0.2; // Musik utama otomatis mengecil ke 20%
+    } else {
+        voiceAudio.pause();
+        audio.volume = 1.0; // Musik kembali normal ke 100% jika VN kamu jeda
+    }
+    
+    // Ketika VN sudah selesai berputar sampai akhir
+    voiceAudio.addEventListener('ended', function() {
+        audio.volume = 1.0; // Musik otomatis kembali normal ke 100%
+    });
+}
 
         // Kontrol Q&A Accordion
         function toggleQA(card) {
